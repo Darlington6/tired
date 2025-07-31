@@ -6,14 +6,15 @@ import 'package:rovify/presentation/common/settings_privacy.dart';
 import 'package:rovify/presentation/screens/home/home_screen.dart';
 import 'package:rovify/presentation/screens/home/tabs/explore_tab.dart';
 import 'package:rovify/presentation/screens/home/widgets/creator/become_creator.dart';
-import 'package:rovify/presentation/screens/home/widgets/creator/create_event_screen.dart';
+import 'package:rovify/presentation/screens/home/widgets/creator/creator_dashboard.dart';
+import 'package:rovify/presentation/screens/home/widgets/creator/create_event_screen.dart'
+    as event_screen;
+import 'package:rovify/presentation/screens/home/widgets/creator/event_details_screen.dart';
 import 'package:rovify/presentation/screens/onboarding/onboarding_screen.dart';
-
 import 'package:rovify/presentation/screens/splash/splash_screen.dart';
 import 'package:rovify/presentation/screens/auth/login_bottom_sheet.dart';
 import 'package:rovify/presentation/screens/auth/signup_bottom_sheet.dart';
 import 'package:rovify/presentation/screens/auth/forgotpassword_bottom_sheet.dart';
-import 'package:rovify/presentation/pages/event_form_screen.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -36,10 +37,7 @@ class AppRouter {
         return '/explore';
       }
 
-      if (!isAuthenticated &&
-          !isSplashRoute &&
-          !isAuthRoute &&
-          currentPath != '/onboarding') {
+      if (!isAuthenticated && !isSplashRoute && !isAuthRoute && currentPath != '/onboarding') {
         return '/splash';
       }
 
@@ -64,59 +62,89 @@ class AppRouter {
       ),
 
       // Home
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/home', name: 'home', builder: (context, state) => const HomeScreen()),
 
       /// Auth Bottom Sheet Routes
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) => Scaffold(
-          body: child,
-          resizeToAvoidBottomInset: false,
-        ),
+        builder: (context, state, child) => Scaffold(body: child, resizeToAvoidBottomInset: false),
         routes: [
           _buildBottomSheetRoute('/auth/login', const LoginBottomSheet()),
           _buildBottomSheetRoute('/auth/signup', const SignUpBottomSheet()),
           _buildBottomSheetRoute('/auth/forgot-password', const ForgotPasswordBottomSheet()),
-          // _buildBottomSheetRoute('/auth/reset-success', const ResetSuccessSheet()),
         ],
       ),
 
       /// Main App Routes
       ShellRoute(
-        builder: (context, state, child) => Scaffold(
-          body: child,
-          resizeToAvoidBottomInset: false,
-        ),
+        builder: (context, state, child) => Scaffold(body: child, resizeToAvoidBottomInset: false),
         routes: [
           GoRoute(
             path: '/explore',
             name: 'explore',
             builder: (context, state) => const ExploreTab(),
           ),
-          GoRoute(
-            path: '/addEvent',
-            name: 'addEvent',
-            builder: (context, state) {
-              final userId = FirebaseAuth.instance.currentUser?.uid;
-              return userId == null
-                  ? _unauthenticatedScreen(context, message: 'Please sign in to create events')
-                  : EventFormScreen(userId: userId);
-            },
-          ),
+
+          /// Creator Dashboard and Event Management Routes
           GoRoute(
             path: '/creatorDashboard',
             name: 'creatorDashboard',
             builder: (context, state) {
-              final userId = state.extra as String? ?? FirebaseAuth.instance.currentUser?.uid;
-              return userId == null
-                  ? _unauthenticatedScreen(context)
-                  : CreatorDashboardScreen(userId: userId);
+              final userId = FirebaseAuth.instance.currentUser?.uid;
+              if (userId == null) {
+                return _unauthenticatedScreen(
+                  context,
+                  message: 'Please sign in to access creator dashboard',
+                );
+              }
+              return CreatorDashboardScreen(userId: userId);
             },
           ),
+
+          // GoRoute(
+          //   path: '/addEvent',
+          //   name: 'addEvent',
+          //   builder: (context, state) {
+          //     final userId = FirebaseAuth.instance.currentUser?.uid;
+          //     return userId == null
+          //         ? _unauthenticatedScreen(context, message: 'Please sign in to create events')
+          //         : event_screen.CreateEventScreen(userId: userId);
+          //   },
+          // ),
+          GoRoute(
+            name: 'creatorEventDetails',
+            path: '/event/:eventId/:userId',
+            builder: (context, state) {
+              try {
+                final eventId = state.pathParameters['eventId']!;
+                final userId = state.pathParameters['userId']!;
+
+                // Validate parameters
+                if (eventId.isEmpty || userId.isEmpty) {
+                  throw Exception('Invalid parameters');
+                }
+
+                return EventDetailsScreen(eventId: eventId, userId: userId);
+              } catch (e) {
+                // Fallback to error handling
+                return Scaffold(
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text('Invalid event details'),
+                        ElevatedButton(
+                          onPressed: () => context.go('/'),
+                          child: const Text('Go Home'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+
           GoRoute(
             path: '/becomeCreator',
             name: 'becomeCreator',
@@ -127,6 +155,7 @@ class AppRouter {
                   : BecomeCreatorScreen(userId: userId);
             },
           ),
+
           GoRoute(
             path: '/updateProfile',
             name: 'updateProfile',
@@ -155,10 +184,7 @@ class AppRouter {
           children: [
             Text('Route not found: ${state.uri.toString()}'),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => context.go('/explore'),
-              child: const Text('Go Home'),
-            ),
+            ElevatedButton(onPressed: () => context.go('/explore'), child: const Text('Go Home')),
           ],
         ),
       ),
@@ -176,10 +202,7 @@ class AppRouter {
         child: child,
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           return SlideTransition(
-            position: Tween<Offset>(
-              begin: const Offset(0, 1),
-              end: Offset.zero,
-            ).animate(animation),
+            position: Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero).animate(animation),
             child: child,
           );
         },
@@ -188,7 +211,10 @@ class AppRouter {
   }
 
   /// Display for unauthenticated users
-  static Widget _unauthenticatedScreen(BuildContext context, {String message = 'Authentication required'}) {
+  static Widget _unauthenticatedScreen(
+    BuildContext context, {
+    String message = 'Authentication required',
+  }) {
     return Scaffold(
       body: Center(
         child: Column(
