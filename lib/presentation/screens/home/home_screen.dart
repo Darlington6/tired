@@ -6,6 +6,7 @@ import 'package:rovify/presentation/common/custom_bottom_navbar.dart';
 import 'package:rovify/presentation/common/profile_drawer.dart';
 import 'package:rovify/presentation/screens/home/tabs/create_tab.dart';
 import 'package:rovify/presentation/screens/home/tabs/explore_tab.dart';
+import 'package:rovify/presentation/screens/home/tabs/marketplace_tab.dart';
 import 'package:rovify/presentation/screens/home/tabs/stream_tab.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
     const ExploreTab(),   // Default screen
     const StreamTab(),    // Livestreams tab
     const SizedBox(),
-    const Center(child: Text('Marketplace (Coming soon)')),
+    const MarketplaceTab(),
     const Center(child: Text('Echo (Coming soon)')),
   ];
 

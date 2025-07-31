@@ -31,10 +31,14 @@ class ProfileDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          // Use Container instead of DrawerHeader for better control
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.fromLTRB(16, 40, 16, 16),
             decoration: const BoxDecoration(color: Colors.white),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Important: minimize height
               children: [
                 CircleAvatar(
                   radius: 30,
@@ -51,36 +55,49 @@ class ProfileDrawer extends StatelessWidget {
                         )
                       : null,
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  displayName,
-                  style: const TextStyle(
-                    fontFamily: 'Onest',
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                const SizedBox(height: 12),
+                // Wrap text in Flexible to prevent overflow
+                Flexible(
+                  child: Text(
+                    displayName,
+                    style: const TextStyle(
+                      fontFamily: 'Onest',
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  email,
-                  style: const TextStyle(fontFamily: 'Onest', fontSize: 14, color: Colors.black54),
+                Flexible(
+                  child: Text(
+                    email,
+                    style: const TextStyle(fontFamily: 'Onest', fontSize: 14, color: Colors.black54),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 ),
                 if (walletAddress != null) ...[
                   const SizedBox(height: 4),
-                  Text(
-                    'Wallet: ${walletAddress!.substring(0, 6)}...${walletAddress!.substring(walletAddress!.length - 4)}',
-                    style: const TextStyle(
-                      fontFamily: 'Onest',
-                      fontSize: 12,
-                      color: Colors.black45,
+                  Flexible(
+                    child: Text(
+                      'Wallet: ${walletAddress!.substring(0, 6)}...${walletAddress!.substring(walletAddress!.length - 4)}',
+                      style: const TextStyle(
+                        fontFamily: 'Onest',
+                        fontSize: 12,
+                        color: Colors.black45,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                     ),
                   ),
                 ],
               ],
             ),
           ),
-
+      
           // Interests Section
           if (interests != null && interests!.isNotEmpty)
             Padding(
@@ -92,7 +109,7 @@ class ProfileDrawer extends StatelessWidget {
                     .toList(),
               ),
             ),
-
+      
           // New Menu Item: Edit Profile
           _buildMenuItem(
             context,
@@ -103,7 +120,7 @@ class ProfileDrawer extends StatelessWidget {
               context.pushNamed('updateProfile'); // Navigate to /updateProfile
             },
           ),
-
+      
           _buildMenuItem(context, icon: Icons.auto_graph, title: 'Vibemeter'),
           _buildMenuItem(context, icon: Icons.account_balance_wallet, title: 'DAO'),
           _buildMenuItem(context, icon: Icons.wallet, title: 'Wallet'),
@@ -117,9 +134,9 @@ class ProfileDrawer extends StatelessWidget {
               context.pushNamed('settingsPrivacy');
             },
           ),
-
+      
           const Divider(height: 1),
-
+      
           // Creator Section
           if (isCreator) ...[
             _buildMenuItem(
@@ -153,7 +170,7 @@ class ProfileDrawer extends StatelessWidget {
             ),
             const Divider(height: 1),
           ],
-
+      
           // _buildMenuItem(
           //   context,
           //   icon: Icons.logout,
@@ -186,11 +203,11 @@ class ProfileDrawer extends StatelessWidget {
                   ],
                 ),
               );
-
+      
               if (shouldLogout != true) return;
               if (!context.mounted) return;
               context.pop(); // Close drawer
-
+      
               try {
                 await FirebaseAuth.instance.signOut();
                 if (!context.mounted) return;
@@ -203,7 +220,7 @@ class ProfileDrawer extends StatelessWidget {
               }
             },
           ),
-
+      
         ],
       ),
     );

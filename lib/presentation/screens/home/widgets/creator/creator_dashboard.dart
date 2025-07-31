@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class CreatorDashboardScreen extends StatefulWidget {
@@ -18,10 +19,22 @@ class _CreatorDashboardScreenState extends State<CreatorDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
         title: const Text(
           'Creator Dashboard',
           style: TextStyle(fontFamily: 'Onest', fontWeight: FontWeight.bold),
         ),
+        // leading: IconButton(
+        //   icon: const Icon(Icons.arrow_back),
+        //   onPressed: () {
+        //     if (context.canPop()) {
+        //       context.pop();
+        //     } else {
+        //       // Fallback navigation - go to home
+        //       context.go('/');
+        //     }
+        //   },
+        // ),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),
