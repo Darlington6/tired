@@ -8,6 +8,7 @@ class EventDetailsScreen extends StatefulWidget {
   final String eventId;
   final String userId;
 
+
   const EventDetailsScreen({
     super.key,
     required this.eventId,
@@ -36,17 +37,17 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
         .snapshots();
   }
 
-  Future<String> _getUserDisplayName(String userId) async {
-    if (userId.isEmpty) return 'Guest';
-    if (_userDisplayNames.containsKey(userId)) {
-      return _userDisplayNames[userId]!;
+  Future<String> _getUserDisplayName(String userID) async {
+    if (userID.isEmpty) return 'Guest';
+    if (_userDisplayNames.containsKey(userID)) {
+      return _userDisplayNames[userID]!;
     }
 
     try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
+      final userDoc = await _firestore.collection('users').doc(userID).get();
       final displayName = userDoc.data()?['displayName'] ?? 'Guest';
       if (displayName != 'Guest') {
-        _userDisplayNames[userId] = displayName;
+        _userDisplayNames[userID] = displayName;
       }
       return displayName;
     } catch (e) {

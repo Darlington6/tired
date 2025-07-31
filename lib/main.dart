@@ -23,7 +23,6 @@ import 'package:rovify/presentation/blocs/event/event_event.dart';
 import 'package:rovify/presentation/blocs/event/event_form_bloc.dart';
 import 'package:rovify/presentation/blocs/nft/nft_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'core/theme/app_theme.dart';
 import 'presentation/routes/app_router.dart';
 
 void main() async {

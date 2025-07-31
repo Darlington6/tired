@@ -22,7 +22,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
   final _formKey = GlobalKey<FormState>();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final List<String> _categories = ['Music', 'Sports', 'Food', 'Art', 'Business'];
-  final List<String> _types = ['Physical', 'Virtual'];
+  final List<String> _types = ['Physical', 'Virtual', 'In-person']; // Updated types
 
   // Controllers
   late final TextEditingController _titleController;
@@ -63,7 +63,14 @@ class _EditEventScreenState extends State<EditEventScreen> {
     );
     
     _selectedCategory = widget.eventData['category'] ?? 'Music';
-    _selectedType = widget.eventData['type'] ?? 'Physical';
+    
+    // Handle type with proper validation
+    final rawType = widget.eventData['type'] ?? 'Physical';
+    _selectedType = _types.firstWhere(
+      (type) => type.toLowerCase() == rawType.toString().toLowerCase(),
+      orElse: () => 'Physical'
+    );
+    
     _isFree = (widget.eventData['price'] ?? 0) == 0;
   }
 
@@ -124,7 +131,7 @@ class _EditEventScreenState extends State<EditEventScreen> {
       'location': _locationController.text,
       'datetime': dateTime,
       'category': _selectedCategory,
-      'type': _selectedType,
+      'type': _selectedType, // Now uses standardized value
       'price': _isFree ? 0 : double.parse(_ticketPriceController.text),
       'totalTickets': _totalTicketsController.text.isEmpty 
           ? null 
@@ -226,9 +233,11 @@ class _EditEventScreenState extends State<EditEventScreen> {
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedType = newValue!;
-                  });
+                  if (newValue != null) {
+                    setState(() {
+                      _selectedType = newValue;
+                    });
+                  }
                 },
               ),
               const SizedBox(height: 16),
