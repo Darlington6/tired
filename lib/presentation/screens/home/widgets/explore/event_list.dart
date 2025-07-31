@@ -22,12 +22,7 @@ class EventList extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text('Something went wrong'),
-            ),
-          );
+          return const Center(child: Text('Something went wrong'));
         }
 
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -36,14 +31,10 @@ class EventList extends StatelessWidget {
 
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                searchQuery.isEmpty 
-                  ? 'No upcoming events'
-                  : 'No events match your search',
-                style: const TextStyle(fontSize: 16),
-              ),
+            child: Text(
+              searchQuery.isEmpty 
+                ? 'No upcoming events'
+                : 'No events match your search',
             ),
           );
         }
@@ -51,19 +42,10 @@ class EventList extends StatelessWidget {
         final filteredEvents = _applyFilters(snapshot.data!.docs);
 
         if (filteredEvents.isEmpty) {
-          return const Center(
-            child: Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Text(
-                'No events match your filters',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-          );
+          return const Center(child: Text('No events match your filters'));
         }
 
         return ListView.separated(
-          physics: const BouncingScrollPhysics(),
           itemCount: filteredEvents.length,
           separatorBuilder: (_, __) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
@@ -82,12 +64,20 @@ class EventList extends StatelessWidget {
               status: data['status'] ?? 'upcoming',
               ticketType: data['ticketType'] ?? '',
               category: data['category'] ?? '',
-              price: data['price'] ?? '',
+              price: _convertToDouble(data['price']),
             );
           },
         );
       },
     );
+  }
+
+  double _convertToDouble(dynamic price) {
+    if (price == null) return 0.0;
+    if (price is int) return price.toDouble();
+    if (price is double) return price;
+    if (price is String) return double.tryParse(price) ?? 0.0;
+    return 0.0;
   }
 
   List<QueryDocumentSnapshot> _applyFilters(List<QueryDocumentSnapshot> events) {

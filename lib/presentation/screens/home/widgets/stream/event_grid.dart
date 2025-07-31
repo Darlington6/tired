@@ -12,6 +12,7 @@ class EventGrid extends StatelessWidget {
     final crossAxisCount = orientation == Orientation.portrait ? 2 : 4;
     
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
       child: Column(
         children: _buildRows(context, crossAxisCount),

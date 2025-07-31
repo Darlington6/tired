@@ -11,8 +11,15 @@ class EventModel extends Event {
     required super.viewers,
     required super.followers,
     required super.isLive,
-    super.hostId,        
-    super.category,      
+    required super.hostId,
+    required super.type,
+    required super.location,
+    required super.category,
+    required super.datetime,
+    required super.description,
+    required super.status,
+    required super.ticketType,
+    required super.createdAt,      
   });
 
   /// From Firestore Document Snapshot
@@ -21,13 +28,24 @@ class EventModel extends Event {
       id: docId,
       title: data['title'] ?? 'No Title',
       hostName: data['hostName'] ?? 'Unknown Host',
-      hostImageUrl: data['hostImageUrl'] ?? 'https://via.placeholder.com/150', 
+      hostImageUrl: data['hostImageUrl'] ?? 'https://via.placeholder.com/150',
       thumbnailUrl: data['thumbnailUrl'] ?? '',
       viewers: data['viewers'] ?? 0,
       followers: data['followers'] ?? 0,
       isLive: data['isLive'] ?? false,
-      hostId: data['hostId'],                   
-      category: data['category'] ?? 'Popular',   
+      category: data['category'] ?? 'Popular',
+      hostId: data['hostID'] ?? '',
+      type: data['type'] ?? 'in-person',
+      location: data['location'] ?? '',
+      datetime: (data['datetime'] != null && data['datetime'] is Timestamp)
+          ? (data['datetime'] as Timestamp).toDate()
+          : DateTime.now(), // fallback to now
+      description: data['description'] ?? '',
+      status: data['status'] ?? 'upcoming',
+      ticketType: data['ticketType'] ?? 'General',
+      createdAt: (data['createdAt'] != null && data['createdAt'] is Timestamp)
+          ? (data['createdAt'] as Timestamp).toDate()
+          : DateTime.now(), // fallback
     );
   }
 
@@ -42,7 +60,15 @@ class EventModel extends Event {
       'followers': followers,
       'isLive': isLive,
       'hostId': hostId,           
-      'category': category,       
+      'category': category,
+      'hostID': hostId,
+      'type': type,
+      'location': location,
+      'datetime': datetime,
+      'description': description,
+      'status': status,
+      'ticketType': ticketType,
+      'createdAt': createdAt,       
     };
   }
 
@@ -58,7 +84,14 @@ class EventModel extends Event {
       followers: event.followers,
       isLive: event.isLive,
       hostId: event.hostId,       
-      category: event.category,  
+      category: event.category, 
+      type: event.type, 
+      location: event.location, 
+      datetime: event.datetime, 
+      description: event.description, 
+      status: event.status, 
+      ticketType: event.ticketType, 
+      createdAt: event.createdAt,       
     );
   }
 
@@ -74,7 +107,14 @@ class EventModel extends Event {
       followers: followers,
       isLive: isLive,
       hostId: hostId,             
-      category: category,         
+      category: category,
+      type: type, 
+      location: location, 
+      datetime: datetime, 
+      description: description, 
+      status: status, 
+      ticketType: ticketType, 
+      createdAt: createdAt,             
     );
   }
 

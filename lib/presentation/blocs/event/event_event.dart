@@ -9,6 +9,15 @@ abstract class EventEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class LoadUpcomingEvents extends EventEvent {}
+
+class ToggleFavoriteEvent extends EventEvent {
+  final String eventId;
+  final bool isFavorite;
+
+  const ToggleFavoriteEvent(this.eventId, this.isFavorite);
+}
+
 class CreateEventRequested extends EventEvent {
   final Event event;
   final File imageFile;

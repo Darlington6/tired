@@ -6,14 +6,14 @@ import 'dart:io';
 
 import 'package:rovify/presentation/blocs/event/event_form_bloc.dart';
 
-class EventFormScreen extends StatefulWidget {
-  const EventFormScreen({super.key});
+class EventFormScreen1 extends StatefulWidget {
+  const EventFormScreen1({super.key});
 
   @override
-  State<EventFormScreen> createState() => _EventFormScreenState();
+  State<EventFormScreen1> createState() => _EventFormScreenState();
 }
 
-class _EventFormScreenState extends State<EventFormScreen> {
+class _EventFormScreenState extends State<EventFormScreen1> {
   // Form key for validation
   final _formKey = GlobalKey<FormState>();
 

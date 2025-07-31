@@ -19,20 +19,25 @@ class StreamTab extends StatefulWidget {
 class _StreamTabState extends State<StreamTab> {
   final List<String> tabOptions = ['Live Now', 'Upcoming', 'Following'];
   int selectedTabIndex = 0;
-  String selectedCategory = 'Popular'; // Track selected category
+  String selectedCategory = 'Popular';
 
-  // Create a scroll controller to monitor scroll events on the associated scrollable widget
   final ScrollController _scrollController = ScrollController();
-  bool _isAtTop = true; // Tracks whether the scroll position is at the top of the list/view
+  bool _isAtTop = true;
 
   @override
   void initState() {
     super.initState();
-    // Attach a listener to the scroll controller
+    
+    // FIX: Add a check to prevent unnecessary setState calls
     _scrollController.addListener(() {
-      setState(() {
-        _isAtTop = _scrollController.offset <= 0; // Update _isAtTop based on the current scroll position
-      });
+      final isCurrentlyAtTop = _scrollController.offset <= 0;
+      
+      // Only call setState if the state actually changed
+      if (_isAtTop != isCurrentlyAtTop) {
+        setState(() {
+          _isAtTop = isCurrentlyAtTop;
+        });
+      }
     });
 
     // Trigger the event fetching when the widget is initialized

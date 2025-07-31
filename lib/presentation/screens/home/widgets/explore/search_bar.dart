@@ -44,9 +44,8 @@ class _SearchBarFeatureState extends State<SearchBarFeature> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
@@ -71,8 +70,7 @@ class _SearchBarFeatureState extends State<SearchBarFeature> {
             fillColor: Colors.white,
             contentPadding: const EdgeInsets.symmetric(vertical: 20),
             hintStyle: const TextStyle(
-              fontFamily: 'Onest',
-              color: Colors.black54,
+              color: Colors.black,
               fontSize: 18,
             ),
             hintText: null,
@@ -99,17 +97,14 @@ class _SearchBarFeatureState extends State<SearchBarFeature> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30),
               borderSide: const BorderSide(
-                color: Color(0xFF8D8D8D),
-                width: 0.5,
+                color: Color(0xFF9C27B0),
+                width: 2,
               ),
             ),
             suffixIcon: widget.searchQuery.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _controller.clear();
-                      widget.onClearSearch();
-                    },
+                    onPressed: widget.onClearSearch,
                   )
                 : null,
           ),

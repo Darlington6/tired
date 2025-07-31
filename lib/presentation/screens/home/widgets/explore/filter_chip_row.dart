@@ -21,12 +21,10 @@ class _FilterChipRowState extends State<FilterChipRow> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 60, // Increased height and wrapped in Container
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return SizedBox(
+      height: 50,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(), // Added smooth scrolling
         padding: const EdgeInsets.symmetric(horizontal: 8),
         itemCount: filters.length,
         itemBuilder: (context, index) {

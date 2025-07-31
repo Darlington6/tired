@@ -8,6 +8,7 @@ import 'package:rovify/domain/repositories/event_repository.dart';
 class EventRepositoryImpl implements EventRepository {
   final EventRemoteDataSource remoteDataSource;
 
+
   EventRepositoryImpl(FirebaseFirestore firestore, {required this.remoteDataSource});
 
   @override
@@ -20,5 +21,15 @@ class EventRepositoryImpl implements EventRepository {
   Future<List<Event>> fetchEvents() async {
     final models = await remoteDataSource.fetchEvents();
     return models.map((e) => e.toEntity()).toList();
+  }
+
+  @override
+  Stream<List<Event>> getUpcomingEvents() {
+    return remoteDataSource.getUpcomingEvents();
+  }
+
+   @override
+  Future<void> toggleFavorite(String eventId, String userId, bool isFavorite) {
+    return remoteDataSource.toggleFavorite(eventId, userId, isFavorite);
   }
 }

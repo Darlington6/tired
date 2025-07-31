@@ -1,8 +1,34 @@
 import 'package:equatable/equatable.dart';
 import 'package:rovify/domain/entities/event.dart';
 
-abstract class EventState extends Equatable {
-  const EventState();
+enum EventStatus { initial, loading, success, failure }
+
+class EventState extends Equatable {
+  final EventStatus status;
+  final List<Event> events;
+  final String? errorMessage;
+  final Set<String> favoriteEventIds;
+
+  const EventState({
+    this.status = EventStatus.initial,
+    this.events = const [],
+    this.errorMessage,
+    this.favoriteEventIds = const {},
+  });
+
+  EventState copyWith({
+    EventStatus? status,
+    List<Event>? events,
+    String? errorMessage,
+    Set<String>? favoriteEventIds,
+  }) {
+    return EventState(
+      status: status ?? this.status,
+      events: events ?? this.events,
+      errorMessage: errorMessage ?? this.errorMessage,
+      favoriteEventIds: favoriteEventIds ?? this.favoriteEventIds,
+    );
+  }
 
   @override
   List<Object> get props => [];
@@ -16,7 +42,8 @@ class EventCreatedSuccessfully extends EventState {}
 
 class EventLoading extends EventState {} // Added
 
-class EventLoaded extends EventState { // Renamed from EventsLoaded
+class EventLoaded extends EventState {
+  @override
   final List<Event> events;
 
   const EventLoaded(this.events);

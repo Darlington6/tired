@@ -35,78 +35,66 @@ class _EventListWithSearchState extends State<EventListWithSearch> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          return SizedBox(
-            height: constraints.maxHeight,
-            width: constraints.maxWidth,
-            child: Stack(
-              children: [
-                Column(
-                  children: [
-                    // Search Bar
-                    SearchBarFeature(
-                      onSearchChanged: _handleSearchChanged,
-                      onClearSearch: _clearSearch,
-                      searchQuery: _searchQuery,
-                    ),
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
 
-                    // Category Tabs
-                    CategoryTabs(
-                      selectedCategory: _selectedCategory,
-                      onCategorySelected: _handleCategorySelected,
-                    ),
-
-                    // Filter Chips
-                    const FilterChipRow(),
-
-                    // "Upcoming Events" title
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          'Upcoming Events',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Onest',
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // Event List
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: EventList(
-                          searchQuery: _searchQuery,
-                          categoryFilter: _selectedCategory,
-                        ),
-                      ),
-                    ),
-                    
-                    // Add bottom padding for floating button
-                    const SizedBox(height: 80),
-                  ],
-                ),
-
-                // Floating Nearby Button
-                Positioned(
-                  bottom: 24,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: _FloatingNearbyButton(),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SearchBarFeature(
+                    onSearchChanged: _handleSearchChanged,
+                    onClearSearch: _clearSearch,
+                    searchQuery: _searchQuery,
                   ),
-                ),
-              ],
+                  CategoryTabs(
+                    selectedCategory: _selectedCategory,
+                    onCategorySelected: _handleCategorySelected,
+                  ),
+                  const FilterChipRow(),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(16.0, 8.0, 16.0, 4.0),
+                    child: Text(
+                      'Upcoming Events',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Onest',
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: isLandscape ? screenHeight * 0.6 : screenHeight * 0.4,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: EventList(
+                        searchQuery: _searchQuery,
+                        categoryFilter: _selectedCategory,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          );
-        },
+
+            // Floating Nearby Button
+            const Positioned(
+              bottom: 24,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: _FloatingNearbyButton(),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -124,7 +112,6 @@ class _FloatingNearbyButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         onTap: () => _showNearbyEvents(context),
         child: Container(
-          constraints: const BoxConstraints(maxWidth: 200),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           decoration: BoxDecoration(
             color: Colors.black,
@@ -137,9 +124,9 @@ class _FloatingNearbyButton extends StatelessWidget {
               ),
             ],
           ),
-          child: const Row(
+          child: Row(
             mainAxisSize: MainAxisSize.min,
-            children: [
+            children: const [
               Icon(Icons.near_me, color: Colors.white, size: 18),
               SizedBox(width: 8),
               Text(
@@ -159,8 +146,6 @@ class _FloatingNearbyButton extends StatelessWidget {
   }
 
   void _showNearbyEvents(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Nearby events coming soon!')),
-    );
+    // TODO: Implement nearby events functionality
   }
 }

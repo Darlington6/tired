@@ -1,11 +1,14 @@
+import 'dart:math' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class EventCard extends StatelessWidget {
+class EventCard extends StatefulWidget {
   final String title;
   final String thumbnailUrl;
-  final String hostName;
+  final String hostName; // To be overridden by dynamic fetching
   final String hostId;
   final int followers;
   final int viewers;
@@ -19,8 +22,80 @@ class EventCard extends StatelessWidget {
     required this.hostId,
     required this.followers,
     required this.viewers,
-    required this.isLive, required hostImageUrl,
+    required this.isLive,
+    required hostImageUrl,
   });
+
+  @override
+  State<EventCard> createState() => _EventCardState();
+}
+
+class _EventCardState extends State<EventCard> {
+  String? dynamicHostName;
+  bool isLoadingHostName = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCreatorName();
+  }
+
+  Future<void> _fetchCreatorName() async {
+    if (widget.hostId.isEmpty) {
+      if (mounted) {
+        setState(() => dynamicHostName = 'Unknown Host');
+      }
+      return;
+    }
+
+    if (mounted) {
+      setState(() => isLoadingHostName = true);
+    }
+
+    try {
+      // First try to get from Firestore (creator's profile)
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.hostId)
+          .get();
+
+      String? creatorName;
+
+      if (userDoc.exists) {
+        final userData = userDoc.data();
+        // Try different possible field names for display name
+        creatorName = userData?['displayName'] ?? 
+                     userData?['name'] ?? 
+                     userData?['fullName'];
+      }
+
+      // If no custom name in Firestore, try Google account name
+      if (creatorName == null || creatorName.isEmpty) {
+        final currentUser = FirebaseAuth.instance.currentUser;
+        if (currentUser != null && currentUser.uid == widget.hostId) {
+          creatorName = currentUser.displayName;
+        }
+      }
+
+      // Final fallback
+      creatorName ??= 'Unknown Host';
+
+      if (mounted) {
+        setState(() {
+          dynamicHostName = creatorName;
+          isLoadingHostName = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error fetching creator name: $e');
+      if (mounted) {
+        setState(() {
+          dynamicHostName = 'Unknown Host';
+          isLoadingHostName = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +107,11 @@ class EventCard extends StatelessWidget {
         ? screenHeight * 0.32
         : screenHeight * 0.8;
 
-    final compactViewers = NumberFormat.compact().format(viewers);
-    final compactFollowers = NumberFormat.compact().format(followers);
+    final compactViewers = NumberFormat.compact().format(widget.viewers);
+    final compactFollowers = NumberFormat.compact().format(widget.followers);
+
+    // Use dynamic name if available, otherwise use the passed hostName as fallback
+    final displayName = dynamicHostName ?? widget.hostName;
 
     return SizedBox(
       height: cardHeight,
@@ -47,8 +125,8 @@ class EventCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(13),
                   child: Image.network(
-                    thumbnailUrl.isNotEmpty
-                        ? thumbnailUrl
+                    widget.thumbnailUrl.isNotEmpty
+                        ? widget.thumbnailUrl
                         : 'https://via.placeholder.com/300x200.png?text=No+Image',
                     width: double.infinity,
                     height: double.infinity,
@@ -80,7 +158,7 @@ class EventCard extends StatelessWidget {
                 Positioned(
                   top: 12,
                   right: 11,
-                  child: isLive
+                  child: widget.isLive
                       ? Container(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
@@ -114,7 +192,7 @@ class EventCard extends StatelessWidget {
                   right: 12,
                   bottom: 12,
                   child: Text(
-                    title,
+                    widget.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
@@ -139,9 +217,9 @@ class EventCard extends StatelessWidget {
             flex: 3,
             child: Row(
               children: [
-                // Use FutureBuilder implementation
+                // Use FutureBuilder implementation for profile image
                 FutureBuilder<String?>(
-                  future: _getUserProfileImage(hostId),
+                  future: _getUserProfileImage(widget.hostId),
                   builder: (context, snapshot) {
                     final profileImageUrl = snapshot.data;
                     
@@ -175,15 +253,24 @@ class EventCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        hostName,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600, 
-                          fontSize: 14,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      isLoadingHostName
+                          ? const SizedBox(
+                              width: 100,
+                              height: 14,
+                              child: LinearProgressIndicator(
+                                backgroundColor: Colors.grey,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                              ),
+                            )
+                          : Text(
+                              displayName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600, 
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                       const SizedBox(height: 2),
                       Text(
                         '$compactFollowers Followers',
@@ -215,11 +302,11 @@ class EventCard extends StatelessWidget {
         return currentUser.photoURL;
       }
       
-      // If it's not the current user, you might want to fetch from Firestore
-      // where you could store user profile images
+      // If it's not the current user, you could fetch from Firestore if needed
+      // For now, return null for other users
       return null;
     } catch (e) {
-      print('Error getting user profile image: $e');
+      developer.log('Error getting user profile image: $e' as num);
       return null;
     }
   }

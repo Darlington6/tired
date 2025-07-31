@@ -8,7 +8,14 @@ class Event {
   final int followers;
   final bool isLive;
   final String? hostId;
-  final String? category; 
+  final String? category;
+  final String? type;
+  final String? location;
+  final DateTime? datetime;
+  final String? description;
+  final String? status;
+  final String? ticketType;
+  final DateTime? createdAt;  
 
   Event({
     required this.id,
@@ -21,5 +28,12 @@ class Event {
     required this.isLive,
     required this.hostId,
     required this.category,
+    required this.type,
+    required this.location, 
+    required this.datetime, 
+    required this.description, 
+    required this.status, 
+    required this.ticketType, 
+    required this.createdAt,    
   });
 }
