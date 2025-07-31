@@ -7,8 +7,6 @@ import 'package:rovify/presentation/screens/home/home_screen.dart';
 import 'package:rovify/presentation/screens/home/tabs/explore_tab.dart';
 import 'package:rovify/presentation/screens/home/widgets/creator/become_creator.dart';
 import 'package:rovify/presentation/screens/home/widgets/creator/creator_dashboard.dart';
-import 'package:rovify/presentation/screens/home/widgets/creator/create_event_screen.dart'
-    as event_screen;
 import 'package:rovify/presentation/screens/home/widgets/creator/event_details_screen.dart';
 import 'package:rovify/presentation/screens/onboarding/onboarding_screen.dart';
 import 'package:rovify/presentation/screens/splash/splash_screen.dart';
