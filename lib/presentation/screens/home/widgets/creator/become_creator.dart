@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:rovify/core/utils/validators.dart';
 import 'package:rovify/core/widgets/loading_button.dart';
+import 'package:rovify/presentation/screens/home/home_screen.dart';
 import 'package:rovify/presentation/screens/home/tabs/explore_tab.dart';
 
 class BecomeCreatorScreen extends StatefulWidget {
@@ -85,10 +86,10 @@ class _BecomeCreatorScreenState extends State<BecomeCreatorScreen> {
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return;
       
-      Navigator.pushAndRemoveUntil(
+      Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const ExploreTab()),
-        (route) => false,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        
       );
     } catch (e) {
       _showError('Failed to submit application: ${e.toString()}');

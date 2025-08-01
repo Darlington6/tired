@@ -154,8 +154,7 @@ class ProfileDrawer extends StatelessWidget {
               title: 'Create Event',
               onTap: () {
                 context.pop();
-                context.pushNamed('addEvent');
-              },
+                context.pushNamed('addEvent', extra: userId);},
             ),
             const Divider(height: 1),
           ] else ...[

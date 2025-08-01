@@ -6,6 +6,8 @@ import 'package:rovify/presentation/common/settings_privacy.dart';
 import 'package:rovify/presentation/screens/home/home_screen.dart';
 import 'package:rovify/presentation/screens/home/tabs/explore_tab.dart';
 import 'package:rovify/presentation/screens/home/widgets/creator/become_creator.dart';
+import 'package:rovify/presentation/screens/home/widgets/creator/create_event_screen.dart'
+    show CreateEventScreen;
 import 'package:rovify/presentation/screens/home/widgets/creator/creator_dashboard.dart';
 import 'package:rovify/presentation/screens/home/widgets/creator/event_details_screen.dart';
 import 'package:rovify/presentation/screens/onboarding/onboarding_screen.dart';
@@ -99,16 +101,16 @@ class AppRouter {
             },
           ),
 
-          // GoRoute(
-          //   path: '/addEvent',
-          //   name: 'addEvent',
-          //   builder: (context, state) {
-          //     final userId = FirebaseAuth.instance.currentUser?.uid;
-          //     return userId == null
-          //         ? _unauthenticatedScreen(context, message: 'Please sign in to create events')
-          //         : event_screen.CreateEventScreen(userId: userId);
-          //   },
-          // ),
+          GoRoute(
+            path: '/addEvent',
+            name: 'addEvent',
+            builder: (context, state) {
+              final userId = FirebaseAuth.instance.currentUser?.uid;
+              return userId == null
+                  ? _unauthenticatedScreen(context, message: 'Please sign in to create events')
+                  : CreateEventScreen(userId: userId);
+            },
+          ),
           GoRoute(
             name: 'creatorEventDetails',
             path: '/event/:eventId/:userId',
